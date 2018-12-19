@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RandomUser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="bower-libs/bootstrap/dist/css/bootstrap.min.css">
+    
+</head>
+<body>
+    <h1>Test d API avec Ajax</h1>
+    <img>
+    <script src="bower-libs/jquery/dist/jquery.min.js"></script>
+    <script src="bower-libs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+$.ajax({
+  url: 'https://randomuser.me/api/',
+  dataType: 'json',
+  success: function(data) {
+    console.log(data);
+    console.log(data.results[0].name.last);
+  }
+});
+     
+var request = $.get("https://randomuser.me/api");
+request.done(function(response){
+    console.log(response.results[0].name.last);
+})
+
+</script>
+</body>
+</html>
