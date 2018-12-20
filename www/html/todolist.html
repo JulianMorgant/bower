@@ -255,7 +255,7 @@
         <span>
             Tache :
             <input type="text" id="inputTaskTitle">
-            <button id='btAddTask' >ADD</button>
+            <button id='btAddTask'>ADD</button>
         </span>
         <br>
 
@@ -319,7 +319,7 @@
     <script src="../js-data/taskMoock.js"></script>
 
     <script>
-        //VARIABLES
+        //---VARIABLES---
         var tasksList = [];
 
         const FILTERMAP = {
@@ -328,16 +328,19 @@
             'radioButtonAll': getAllTasksList
         };
 
+        //---FUNCTIONS---
+
         function loadJsonData() {
+            console.log('charge les données Json');
             tasksMookData.forEach(element => {
                 tasksList.push(element);
             });
         }
 
         function getTasksTodoList() {
+            console.log('retourne la liste TODO');
             let returnList = [];
             tasksList.forEach(task => {
-                console.log(task.stamp)
                 if (task.stamp == false) {
                     returnList.push(task)
                 };
@@ -346,10 +349,12 @@
         }
 
         function getAllTasksList() {
+            console.log('retourne la liste All');
             return tasksList;
         }
 
         function getDoneTasksList() {
+            console.log('retourne la liste Done');
             let returnList = [];
             tasksList.forEach(task => {
                 if (task.stamp != false) {
@@ -360,48 +365,105 @@
         }
 
         function filteredTodoList(selector, map) {
-            return map[selector]()
+            console.log(`retourne le selecteur de filtre : ${map[selector]()}`);
+            return map[selector]();
         }
 
-        function addTask(task) {
-
-            console.log(task);
+        function refresh() {
+            console.log("rafraichi la liste");
+            drawList(filteredTodoList(getFilterSelector(), FILTERMAP));
         }
 
-        // IHM
+        function isTaskAlredyExist(name) {
+            let returnBool = false;
+            console.log("test existIn");
+            tasksList.forEach(task => {
+                if (task.name == name) {
+                    returnBool = true;
+                }
+            });
+            return returnBool;
+        }
+
+        function stamper() {
+            console.log("met ou retire un stamp");
+            for (let i = 0; i < tasksList.length; i++) {
+                if (tasksList[i].name == $(this)[0].id) {
+                    tasksList[i].stamp = $(this)[0].checked;
+                    refresh();
+                    break;
+                }
+            }
+        }
+
+        function addTask() {
+            console.log(`tente l'ajoutd'une tache `);
+            let tempTaskName = $(this).parent().children('input').val();
+            if (!isTaskAlreadyExist(tempTaskName)) {
+                tasksList.push({
+                    name: tempTaskName,
+                    stamp: false
+                })
+                refresh();
+            }
+        }
+
+        // ---IHM---
+
         function getFilterSelector() {
-            return $('#radioContainer input[checked]').attr('id');
+
+            console.log(`retourne le filtre :  ${$('#radioContainer input:checked').attr('id')}`);
+            return $('#radioContainer input:checked').attr('id');
         }
+
+        function clearList() {
+
+            console.log(`CLS`);
+            $('#draggable').children('div').remove();
+
+        }
+
 
         function drawList(listToDraw) {
 
-            listToDraw.forEach(task => {
-                console.log(task.name);
+            clearList();
 
-                let newLine = $('<div></div>');
+            console.log(`affiche la liste`);
 
-                newLine.append($('<input>')
-                    .attr('id', task.name)
-                    .attr('type', 'checkbox'));
-                newLine.append($('<label></label>')
-                    .attr('for', task.name)
-                    .html(` - ${task.name}`));
+            if (listToDraw.length > 0) {
 
+                listToDraw.forEach(task => {
+
+                    let newLine = $('<div></div>');
+
+                    newLine.append($('<input>')
+                        .attr('id', task.name)
+                        .attr('type', 'checkbox')
+                        .attr('checked', task.stamp));
+                    newLine.append($('<label></label>')
+                        .attr('for', task.name)
+                        .html(` - ${task.name}`));
+
+                    $('#draggable').append(newLine);
+                })
+            } else {
+                let newLine = $('<div></div>').text('no item');
                 $('#draggable').append(newLine);
-            })
+            }
         }
 
-        function loadListeners(){
-            $('#btAddTask').click = () => {addTask($(this).next().val());
-            console.log('click')};
-
-
+        function loadListeners() {
+            console.log(`Charge les listeners`);
+            $('#btAddTask').click(addTask);
+            $('.form-check').click(refresh);
+            $('#draggable').delegate('input', 'change', stamper);
         };
-        //GO
+        //  ---GO---
         $(document).ready(function () {
+            console.log(`GO !!!`);
             loadListeners();
             loadJsonData();
-            drawList(filteredTodoList(getFilterSelector(), FILTERMAP));
+            refresh();
         });
     </script>
 </body>
