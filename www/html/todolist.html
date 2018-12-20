@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RandomUser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../bower-libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        body {
+
+            background-color: #DDD;
+
+            padding-top: 10px;
+
+        }
+
+        [class*="col-"] {
+            margin-bottom: 20px;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        .well {
+
+            background-color: #CCC;
+
+            padding: 20px;
+
+        }
+
+        a:active,
+        a:focus {
+            outline: none;
+        }
+
+        .inline-form input {
+
+            display: inline-block;
+
+            width: 100px;
+
+        }
+
+        /* pour cacher */
+        .hidden {
+            display: none;
+        }
+
+        #bookTemplate {
+            display: none;
+        }
+
+        /*
+             pour changer de pointeur sur les balises 'a' ... plus class 
+            #menu a {
+                cursor:pointer;
+            }
+            */
+        .stars {
+            cursor: pointer;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .detailsForm {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            border-radius: 3px;
+            border-width: thin;
+            border: 1px solid rgb(46, 46, 46);
+            background-color: rgb(255, 255, 255);
+            padding: 2px;
+            width: auto;
+            max-width: 40%;
+            max-height: 70%;
+            margin: 2px auto;
+            position: absolute;
+            z-index: 20;
+
+        }
+
+
+        .popup {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            border-radius: 3px;
+            border-width: thin;
+            border: 1px solid rgb(46, 46, 46);
+            background-color: rgb(255, 255, 255);
+            padding: 2px;
+            width: auto;
+            max-width: 40%;
+            max-height: 70%;
+            margin: 2px auto;
+            position: absolute;
+            z-index: 20;
+
+        }
+
+        #loginForm {
+            /*classe css*/
+            border: 1px solid #555555;
+            background-color: azure;
+            padding: 20px;
+            width: 50%;
+            margin: 50px auto;
+            position: relative;
+            /*sort du flux mais garde son emplacement dans le flux */
+            z-index: 10;
+        }
+
+        .helpForm {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            border-radius: 1px;
+            border-width: thin;
+            border: 1px solid rgb(46, 46, 46);
+            background-color: rgb(255, 255, 255);
+            padding: 2px;
+            width: auto;
+            max-width: 30%;
+            max-height: 20px;
+            margin: 2px auto;
+            position: absolute;
+            z-index: 20;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            border-radius: 1px;
+            border-width: thin;
+            border: 1px solid rgb(46, 46, 46);
+            background-color: rgb(255, 255, 255);
+            padding: 2px;
+            width: auto;
+            max-width: 30%;
+            max-height: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            position: absolute;
+            z-index: 20;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            align-items: center;
+
+        }
+
+        .tabinput {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            border-radius: 1px;
+            border-width: thin;
+            border: 1px solid rgb(46, 46, 46);
+            background-color: rgb(255, 255, 255);
+            padding: 2px;
+            width: auto;
+            max-width: 35%;
+            max-height: 20px;
+            margin: auto;
+            position: relative;
+            z-index: 20;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+        }
+
+        .overlay {
+            /*style css*/
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            opacity: 70%;
+            background-color: rgba(0, 0, 0, .6);
+        }
+
+        .overlay2 {
+            /*style css*/
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            opacity: 70%;
+            background-color: rgba(20, 0, 60, .3);
+        }
+
+        .picture {
+            width: 100px;
+            height: 100px;
+
+        }
+
+        .button {
+            width: 100px;
+            height: 20px;
+        }
+
+        .active {
+            box-shadow: 10px 5px 5px red;
+
+        }
+
+        #draggable {
+            width: 150px;
+            height: 150px;
+            padding: 0.5em;
+            background-color: aquamarine;
+        }
+
+        #resizable {
+            width: 150px;
+            height: 150px;
+            padding: 0.5em;
+            background-color: coral;
+        }
+
+        #resizable h3 {
+            text-align: center;
+            margin: 0;
+        }
+    </style>
+    <script src="../bower-libs/jquery/dist/jquery.min.js"></script>
+    <script src="../bower-libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../bower-libs/jquery-ui/jquery-ui.min.js"></script>
+    <script>
+        $( function() {
+            $( "#draggable" ).draggable();
+        });
+
+        $( function() {
+            $( "#resizable" ).resizable();
+        });
+    </script>
+
+</head>
+
+<body>
+    <div>
+        <h1>
+            TodoList
+        </h1>
+
+        <span>
+            Tache :
+            <input type="text" id="inputTaskTitle">
+            <button id='btAddTask' >ADD</button>
+        </span>
+        <br>
+
+        <div id='radioContainer'>
+            <div>
+                Filtre :
+            </div>
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="radioButtonTodo" name="radioFilter">
+                <label class="form-check-label" for="radioButtonTodo">A faire</label>
+            </div>
+
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="radioButtonDone" name="radioFilter">
+                <label class="form-check-label" for="radioButtonDone">Fait</label>
+            </div>
+
+            <div class="form-check">
+                <input type="radio" class="form-check-input" id="radioButtonAll" name="radioFilter" checked>
+                <label class="form-check-label" for="radioButtonAll">Toutes</label>
+            </div>
+        </div>
+        <div id="draggable" class="ui-widget-content">
+            <p>Drag me around</p>
+        </div>
+
+        <div id="resizable" class="ui-widget-content">
+            <h3 class="ui-widget-header">Resizable</h3>
+        </div>
+
+        <div>
+
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="../js-data/taskMoock.js"></script>
+
+    <script>
+        //VARIABLES
+        var tasksList = [];
+
+        const FILTERMAP = {
+            'radioButtonTodo': getTasksTodoList,
+            'radioButtonDone': getDoneTasksList,
+            'radioButtonAll': getAllTasksList
+        };
+
+        function loadJsonData() {
+            tasksMookData.forEach(element => {
+                tasksList.push(element);
+            });
+        }
+
+        function getTasksTodoList() {
+            let returnList = [];
+            tasksList.forEach(task => {
+                console.log(task.stamp)
+                if (task.stamp == false) {
+                    returnList.push(task)
+                };
+            })
+            return returnList;
+        }
+
+        function getAllTasksList() {
+            return tasksList;
+        }
+
+        function getDoneTasksList() {
+            let returnList = [];
+            tasksList.forEach(task => {
+                if (task.stamp != false) {
+                    returnList.push(task)
+                };
+            })
+            return returnList;
+        }
+
+        function filteredTodoList(selector, map) {
+            return map[selector]()
+        }
+
+        function addTask(task) {
+
+            console.log(task);
+        }
+
+        // IHM
+        function getFilterSelector() {
+            return $('#radioContainer input[checked]').attr('id');
+        }
+
+        function drawList(listToDraw) {
+
+            listToDraw.forEach(task => {
+                console.log(task.name);
+
+                let newLine = $('<div></div>');
+
+                newLine.append($('<input>')
+                    .attr('id', task.name)
+                    .attr('type', 'checkbox'));
+                newLine.append($('<label></label>')
+                    .attr('for', task.name)
+                    .html(` - ${task.name}`));
+
+                $('#draggable').append(newLine);
+            })
+        }
+
+        function loadListeners(){
+            $('#btAddTask').click = () => {addTask($(this).next().val());
+            console.log('click')};
+
+
+        };
+        //GO
+        $(document).ready(function () {
+            loadListeners();
+            loadJsonData();
+            drawList(filteredTodoList(getFilterSelector(), FILTERMAP));
+        });
+    </script>
+</body>
+
+</html>
