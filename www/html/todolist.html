@@ -213,10 +213,13 @@
         }
 
         #draggable {
-            width: 150px;
-            height: 150px;
+            width: auto;
+            height: auto;
             padding: 0.5em;
             background-color: aquamarine;
+            border-style: solid;
+            border-width: 2px;
+            border-color: black;
         }
 
         #resizable {
@@ -229,6 +232,52 @@
         #resizable h3 {
             text-align: center;
             margin: 0;
+        }
+
+        .toggler {
+            width: 500px;
+            height: 200px;
+            position: relative;
+        }
+
+        #button {
+            padding: .5em 1em;
+            text-decoration: none;
+        }
+
+        #inputTaskTitle {
+            width: 140px;
+            height: 25px;
+            padding: 0.4em;
+            position: relative;
+        }
+
+        #effect h3 {
+            margin: 0;
+            padding: 0.4em;
+            text-align: center;
+        }
+
+        .line{
+            display: inline-block;
+            vertical-align: middle;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+  
+            border-color: black;
+            border-radius: 2px;
+            border-width: thin;
+            padding: 2px;
+            max-width: 80%;
+            margin: auto;
+            position: relative;
+            z-index: 20;
+            text-overflow: ellipsis;
+
+
+        }
+        .ui-effects-transfer {
+            border: 2px dotted gray;
         }
     </style>
     <script src="../bower-libs/jquery/dist/jquery.min.js"></script>
@@ -246,73 +295,48 @@
 
 </head>
 
-<body>
-    <div>
-        <h1>
-            TodoList
-        </h1>
+<body class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <h1>
+                TodoList
+            </h1>
 
-        <span>
-            Tache :
-            <input type="text" id="inputTaskTitle">
-            <button id='btAddTask'>ADD</button>
-        </span>
-        <br>
-
-        <div id='radioContainer'>
-            <div>
-                Filtre :
+            <div class="form-group">
+                Tâche :
+                <input type="text" id="inputTaskTitle">
+                <button id='btAddTask'>ADD</button>
             </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radioButtonTodo" name="radioFilter">
-                <label class="form-check-label" for="radioButtonTodo">A faire</label>
-            </div>
+   
+            <div id='radioContainer'>
+                <div>
+                    Filtre :
+                </div>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" id="radioButtonTodo" name="radioFilter">
+                    <label class="form-check-label" for="radioButtonTodo">A faire</label>
+                </div>
 
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radioButtonDone" name="radioFilter">
-                <label class="form-check-label" for="radioButtonDone">Fait</label>
-            </div>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" id="radioButtonDone" name="radioFilter">
+                    <label class="form-check-label" for="radioButtonDone">Fait</label>
+                </div>
 
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radioButtonAll" name="radioFilter" checked>
-                <label class="form-check-label" for="radioButtonAll">Toutes</label>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" id="radioButtonAll" name="radioFilter" checked>
+                    <label class="form-check-label" for="radioButtonAll">Toutes</label>
+                </div>
+            </div>
+            <div id="draggable" class="ui-widget-content">
+                <p>Liste des taches :</p>
+                <div id="tableTask">
+
+                </div>
             </div>
         </div>
-        <div id="draggable" class="ui-widget-content">
-            <p>Drag me around</p>
-        </div>
-
-        <div id="resizable" class="ui-widget-content">
-            <h3 class="ui-widget-header">Resizable</h3>
-        </div>
-
-        <div>
-
-
-
-
-        </div>
-
 
 
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -328,17 +352,20 @@
             'radioButtonAll': getAllTasksList
         };
 
+        const SPACE = '\u2063';
+
         //---FUNCTIONS---
 
+        //@deprecated
         function loadJsonData() {
-            console.log('charge les données Json');
+            console.info('charge les données Json');
             tasksMookData.forEach(element => {
                 tasksList.push(element);
             });
         }
 
         function getTasksTodoList() {
-            console.log('retourne la liste TODO');
+            console.info('retourne la liste TODO');
             let returnList = [];
             tasksList.forEach(task => {
                 if (task.stamp == false) {
@@ -349,12 +376,12 @@
         }
 
         function getAllTasksList() {
-            console.log('retourne la liste All');
+            console.info('retourne la liste All');
             return tasksList;
         }
 
         function getDoneTasksList() {
-            console.log('retourne la liste Done');
+            console.info('retourne la liste Done');
             let returnList = [];
             tasksList.forEach(task => {
                 if (task.stamp != false) {
@@ -365,18 +392,22 @@
         }
 
         function filteredTodoList(selector, map) {
-            console.log(`retourne le selecteur de filtre : ${map[selector]()}`);
+            console.info(`retourne le selecteur de filtre`);
             return map[selector]();
         }
 
         function refresh() {
-            console.log("rafraichi la liste");
+            console.info("--- démmare le rafraichissement visuel la liste");
             drawList(filteredTodoList(getFilterSelector(), FILTERMAP));
         }
 
-        function isTaskAlredyExist(name) {
+        function isTaskAlreadyExists(name) {
+            console.info("teste l'existance de la tache ou une erreur de saisie");
             let returnBool = false;
-            console.log("test existIn");
+            if (name == "" || typeof name != 'string') {
+                returnBool = true
+            };
+
             tasksList.forEach(task => {
                 if (task.name == name) {
                     returnBool = true;
@@ -386,10 +417,16 @@
         }
 
         function stamper() {
-            console.log("met ou retire un stamp");
+            console.info("modifie un stamp");
             for (let i = 0; i < tasksList.length; i++) {
                 if (tasksList[i].name == $(this)[0].id) {
-                    tasksList[i].stamp = $(this)[0].checked;
+                    if (tasksList[i].stamp == false) {
+                        let d = new Date();
+
+                        tasksList[i].stamp = ` - fait le ${d.toLocaleDateString()} à ${d.toLocaleTimeString()}`;
+                    } else {
+                        tasksList[i].stamp = false
+                    }
                     refresh();
                     break;
                 }
@@ -397,14 +434,18 @@
         }
 
         function addTask() {
-            console.log(`tente l'ajoutd'une tache `);
-            let tempTaskName = $(this).parent().children('input').val();
-            if (!isTaskAlreadyExist(tempTaskName)) {
+            console.info(`tente l'ajout'une tache `);
+            let tempTaskName = $('#inputTaskTitle').val();
+            if (!isTaskAlreadyExists(tempTaskName)) {
                 tasksList.push({
                     name: tempTaskName,
                     stamp: false
                 })
-                refresh();
+                runEffect("transfer");
+                console.info(`tache ajoutée `);
+            } else {
+                runEffect("shake");
+                console.info(`tache non ajoutée `);
             }
         }
 
@@ -412,58 +453,116 @@
 
         function getFilterSelector() {
 
-            console.log(`retourne le filtre :  ${$('#radioContainer input:checked').attr('id')}`);
+            console.info(`retourne le filtre :  ${$('#radioContainer input:checked').attr('id')}`);
             return $('#radioContainer input:checked').attr('id');
         }
 
+        //@deprecated
         function clearList() {
 
-            console.log(`CLS`);
-            $('#draggable').children('div').remove();
+            console.info(`CLS`);
+            $('#draggable div').children('div').remove();
 
+        }
+
+        function saveData() {
+            
+            console.info(`sauvegarde dans le local storage`);
+            let jsonStr = JSON.stringify(tasksList);
+            localStorage.setItem('saveData', jsonStr);
+        }
+
+        function loadData() {
+            console.info(`charge à partir du local storage`);
+            tasksList = JSON.parse(localStorage.getItem('saveData'));
         }
 
 
         function drawList(listToDraw) {
 
-            clearList();
+            console.info(`affiche la liste`);
 
-            console.log(`affiche la liste`);
+            let $shadowDiv = $('<div></div>');
+            $shadowDiv.toggleClass('line');
 
             if (listToDraw.length > 0) {
 
                 listToDraw.forEach(task => {
 
                     let newLine = $('<div></div>');
-
+                    console.log(task.stamp);
+                    let stampString = "";
+                    if (typeof task.stamp != 'boolean') {
+                        stampString =task.stamp;
+                    };
                     newLine.append($('<input>')
                         .attr('id', task.name)
                         .attr('type', 'checkbox')
                         .attr('checked', task.stamp));
                     newLine.append($('<label></label>')
                         .attr('for', task.name)
-                        .html(` - ${task.name}`));
+                        .html(`${SPACE}${task.name}${stampString}`));
 
-                    $('#draggable').append(newLine);
+                    $shadowDiv.append(newLine);
                 })
             } else {
                 let newLine = $('<div></div>').text('no item');
-                $('#draggable').append(newLine);
+                $shadowDiv.append(newLine);
             }
+
+            $('#draggable').children('div').replaceWith($shadowDiv);
+            saveData();
+            console.info(`***********affichage réalisé***************`);
+
         }
 
         function loadListeners() {
-            console.log(`Charge les listeners`);
+            console.info(`Charge les listeners`);
             $('#btAddTask').click(addTask);
             $('.form-check').click(refresh);
             $('#draggable').delegate('input', 'change', stamper);
+            $(document).keyup(function (touche) {
+                var appui = touche.which || touche.keyCode; // le code est compatible tous navigateurs grâce à ces deux propriétés
+                if (appui == 13) { //  13 = Entrée
+                    addTask();
+                }
+            });
         };
+
+        // EFFECTS
+
+        function runEffect(selectedEffect) {
+            console.info(`lance un effet visuel`);
+            var options = {};
+            if (selectedEffect === "scale") {
+                options = {
+                    percent: 50
+                };
+            } else if (selectedEffect === "transfer") {
+                options = {
+                    to: "#draggable div",
+                    className: "ui-effects-transfer"
+                };
+            } else if (selectedEffect === "size") {
+                options = {
+                    to: {
+                        width: 200,
+                        height: 60
+                    }
+                };
+            }
+            // Run the effect
+            $("#inputTaskTitle").effect(selectedEffect, options, 500, refresh);
+        };
+
         //  ---GO---
         $(document).ready(function () {
-            console.log(`GO !!!`);
+            console.info(`GO !!!`);
             loadListeners();
-            loadJsonData();
+            loadData()
+            // loadJsonData();
             refresh();
+
         });
     </script>
 </body>
